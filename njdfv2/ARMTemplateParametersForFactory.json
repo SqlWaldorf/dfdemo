@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "njdfv2"
+		},
+		"babsBlobStorage_connectionString": {
+			"value": ""
+		},
+		"babsSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"SourceDataset_fnh_properties_typeProperties_fileName": {
+			"value": "201508_trip_data.csv"
+		},
+		"SourceDataset_fnh_properties_typeProperties_folderPath": {
+			"value": "u2ulabs/data/babs/source"
+		},
+		"statusdataBlob_properties_typeProperties_fileName": {
+			"value": "201508_status_data.csv.gz"
+		},
+		"statusdataBlob_properties_typeProperties_folderPath": {
+			"value": "u2ulabs/data/babs/source"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://njkeys.vault.azure.net/"
+		}
+	}
+}

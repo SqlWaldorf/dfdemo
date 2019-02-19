@@ -1,0 +1,441 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "njdfv2"
+		},
+		"babsBlobStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'babsBlobStorage'"
+		},
+		"babsSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'babsSqlDatabase'"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://njkeys.vault.azure.net/"
+		},
+		"SourceDataset_fnh_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "201508_trip_data.csv"
+		},
+		"SourceDataset_fnh_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "u2ulabs/data/babs/source"
+		},
+		"statusdataBlob_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "201508_status_data.csv.gz"
+		},
+		"statusdataBlob_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "u2ulabs/data/babs/source"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/babsBlobStorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('babsBlobStorage_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/babsSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('babsSqlDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_fnh')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "babsSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"structure": [
+					{
+						"name": "Trip_ID",
+						"type": "Int32"
+					},
+					{
+						"name": "Duration",
+						"type": "Int32"
+					},
+					{
+						"name": "Start_Date",
+						"type": "DateTime"
+					},
+					{
+						"name": "Start_Station",
+						"type": "String"
+					},
+					{
+						"name": "Start_Terminal",
+						"type": "Int32"
+					},
+					{
+						"name": "End_Date",
+						"type": "DateTime"
+					},
+					{
+						"name": "End_Station",
+						"type": "String"
+					},
+					{
+						"name": "End_Terminal",
+						"type": "Int32"
+					},
+					{
+						"name": "Bike__",
+						"type": "Int32"
+					},
+					{
+						"name": "Subscriber_Type",
+						"type": "String"
+					},
+					{
+						"name": "Zip_Code",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[concat('[', 'dbo].[trip_data]')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/babsSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_fnh')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "babsBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "Trip ID",
+						"type": "Int64"
+					},
+					{
+						"name": "Duration",
+						"type": "Int64"
+					},
+					{
+						"name": "Start Date",
+						"type": "DateTime"
+					},
+					{
+						"name": "Start Station",
+						"type": "String"
+					},
+					{
+						"name": "Start Terminal",
+						"type": "Int64"
+					},
+					{
+						"name": "End Date",
+						"type": "DateTime"
+					},
+					{
+						"name": "End Station",
+						"type": "String"
+					},
+					{
+						"name": "End Terminal",
+						"type": "Int64"
+					},
+					{
+						"name": "Bike #",
+						"type": "Int64"
+					},
+					{
+						"name": "Subscriber Type",
+						"type": "String"
+					},
+					{
+						"name": "Zip Code",
+						"type": "Int64"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"encodingName": null,
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "[parameters('SourceDataset_fnh_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('SourceDataset_fnh_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/babsBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/status_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "babsSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"structure": [
+					{
+						"name": "station_id",
+						"type": "Int32"
+					},
+					{
+						"name": "bikes_available",
+						"type": "Int32"
+					},
+					{
+						"name": "docks_available",
+						"type": "Int32"
+					},
+					{
+						"name": "time",
+						"type": "DateTime"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[concat('[', 'dbo].[babs_status]')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/babsSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/statusdataBlob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "babsBlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "station_id",
+						"type": "Int32"
+					},
+					{
+						"name": "bikes_available",
+						"type": "Int32"
+					},
+					{
+						"name": "docks_available",
+						"type": "Int32"
+					},
+					{
+						"name": "time",
+						"type": "DateTime"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "\n",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"encodingName": null,
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"compression": {
+						"type": "GZip"
+					},
+					"fileName": "[parameters('statusdataBlob_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('statusdataBlob_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/babsBlobStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_trip_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "u2ulabs/data/babs/source/201508_trip_data.csv"
+							},
+							{
+								"name": "Destination",
+								"value": "[concat('[', 'dbo].[trip_data]')]"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": false
+							},
+							"sink": {
+								"type": "SqlSink",
+								"writeBatchSize": 10000
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"columnMappings": {
+									"Trip ID": "Trip_ID",
+									"Duration": "Duration",
+									"Start Date": "Start_Date",
+									"Start Station": "Start_Station",
+									"Start Terminal": "Start_Terminal",
+									"End Date": "End_Date",
+									"End Station": "End_Station",
+									"End Terminal": "End_Terminal",
+									"Bike #": "Bike__",
+									"Subscriber Type": "Subscriber_Type",
+									"Zip Code": "Zip_Code"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_fnh",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_fnh",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy_status_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": false
+							},
+							"sink": {
+								"type": "SqlSink",
+								"writeBatchSize": 10000
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"columnMappings": {
+									"station_id": "station_id",
+									"bikes_available": "bikes_available",
+									"docks_available": "docks_available",
+									"time": "time"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "statusdataBlob",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "status_table",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_fnh')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_fnh')]",
+				"[concat(variables('factoryId'), '/datasets/statusdataBlob')]",
+				"[concat(variables('factoryId'), '/datasets/status_table')]"
+			]
+		}
+	]
+}
