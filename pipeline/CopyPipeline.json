@@ -1,0 +1,112 @@
+{
+	"name": "CopyPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_trip_data",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "u2ulabs/data/babs/source/201508_trip_data.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "[dbo].[trip_data]"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "BlobSource",
+						"recursive": false
+					},
+					"sink": {
+						"type": "SqlSink",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"Trip ID": "Trip_ID",
+							"Duration": "Duration",
+							"Start Date": "Start_Date",
+							"Start Station": "Start_Station",
+							"Start Terminal": "Start_Terminal",
+							"End Date": "End_Date",
+							"End Station": "End_Station",
+							"End Terminal": "End_Terminal",
+							"Bike #": "Bike__",
+							"Subscriber Type": "Subscriber_Type",
+							"Zip Code": "Zip_Code"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_fnh",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_fnh",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_status_data",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "BlobSource",
+						"recursive": false
+					},
+					"sink": {
+						"type": "SqlSink",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"columnMappings": {
+							"station_id": "station_id",
+							"bikes_available": "bikes_available",
+							"docks_available": "docks_available",
+							"time": "time"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "statusdataBlob",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "status_table",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

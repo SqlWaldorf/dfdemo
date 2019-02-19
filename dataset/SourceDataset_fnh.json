@@ -1,0 +1,72 @@
+{
+	"name": "SourceDataset_fnh",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "babsBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "Trip ID",
+				"type": "Int64"
+			},
+			{
+				"name": "Duration",
+				"type": "Int64"
+			},
+			{
+				"name": "Start Date",
+				"type": "DateTime"
+			},
+			{
+				"name": "Start Station",
+				"type": "String"
+			},
+			{
+				"name": "Start Terminal",
+				"type": "Int64"
+			},
+			{
+				"name": "End Date",
+				"type": "DateTime"
+			},
+			{
+				"name": "End Station",
+				"type": "String"
+			},
+			{
+				"name": "End Terminal",
+				"type": "Int64"
+			},
+			{
+				"name": "Bike #",
+				"type": "Int64"
+			},
+			{
+				"name": "Subscriber Type",
+				"type": "String"
+			},
+			{
+				"name": "Zip Code",
+				"type": "Int64"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"quoteChar": "\"",
+				"nullValue": "\\N",
+				"encodingName": null,
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"fileName": "201508_trip_data.csv",
+			"folderPath": "u2ulabs/data/babs/source"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

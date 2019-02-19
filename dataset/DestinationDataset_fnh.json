@@ -1,0 +1,60 @@
+{
+	"name": "DestinationDataset_fnh",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "babsSqlDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureSqlTable",
+		"structure": [
+			{
+				"name": "Trip_ID",
+				"type": "Int32"
+			},
+			{
+				"name": "Duration",
+				"type": "Int32"
+			},
+			{
+				"name": "Start_Date",
+				"type": "DateTime"
+			},
+			{
+				"name": "Start_Station",
+				"type": "String"
+			},
+			{
+				"name": "Start_Terminal",
+				"type": "Int32"
+			},
+			{
+				"name": "End_Date",
+				"type": "DateTime"
+			},
+			{
+				"name": "End_Station",
+				"type": "String"
+			},
+			{
+				"name": "End_Terminal",
+				"type": "Int32"
+			},
+			{
+				"name": "Bike__",
+				"type": "Int32"
+			},
+			{
+				"name": "Subscriber_Type",
+				"type": "String"
+			},
+			{
+				"name": "Zip_Code",
+				"type": "String"
+			}
+		],
+		"typeProperties": {
+			"tableName": "[dbo].[trip_data]"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

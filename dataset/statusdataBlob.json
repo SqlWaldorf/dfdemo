@@ -1,0 +1,47 @@
+{
+	"name": "statusdataBlob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "babsBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "station_id",
+				"type": "Int32"
+			},
+			{
+				"name": "bikes_available",
+				"type": "Int32"
+			},
+			{
+				"name": "docks_available",
+				"type": "Int32"
+			},
+			{
+				"name": "time",
+				"type": "DateTime"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "\n",
+				"quoteChar": "\"",
+				"nullValue": "\\N",
+				"encodingName": null,
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"compression": {
+				"type": "GZip"
+			},
+			"fileName": "201508_status_data.csv.gz",
+			"folderPath": "u2ulabs/data/babs/source"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
